@@ -40,7 +40,25 @@ class GlobalServices:
         self.base_url = base_url.rstrip('/')
         self.auth = HTTPBasicAuth(username, password)
 
-    def _make_request(self, method, endpoint, payload=None):
+    def _make_get_request(self, endpoint, params=None):
+        """Make a GET request to the specified endpoint."""
+        url = f"{self.base_url}/{endpoint}"
+        headers = {"Content-Type": "application/json"}
+
+        try:
+            response = requests.get(
+                url,
+                params=params,
+                headers=headers,
+                auth=self.auth
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Error occurred during GET request: {e}")
+            return None
+
+    def _make_post_request(self, method, endpoint, payload=None):
         """Authenticate requests.
 
         Makes an HTTP request to the specified endpoint with the given method,
@@ -94,7 +112,7 @@ class GlobalServices:
             "per_page": 50
         }
         try:
-            result = self._make_request("POST", endpoint, payload)
+            result = self._make_post_request("POST", endpoint, payload)
             print("Inside Try brock")
             for item in result:
                 if item.get('identified'):
@@ -103,6 +121,33 @@ class GlobalServices:
             return operator_id
         except Exception as e:
             print("Invalid Number")
+
+    def get_products(self, operator_id):
+        """
+        Retrieve products from the API, filtered by operator ID.
+
+        Args:
+            operator_id (int): The operator ID to filter products.
+
+        Returns:
+            list or None: A list of product objects, or None if an error occurs
+        """
+        endpoint = "products"
+        params = {"operator_id": operator_id}
+
+        try:
+            products = self._make_get_request(endpoint, params=params)
+            if products is not None:
+                if operator_id is not None:
+                    return products
+                else:
+                    return None
+            else:
+                print("No products received from the API.")
+                return None
+        except Exception as e:
+            print(f"Error retrieving products: {e}")
+            return None
 
 
 # Example usage:
@@ -115,3 +160,5 @@ if __name__ == "__main__":
         print("Mobile number lookup result:", result)
     else:
         print("Mobile number lookup failed.")
+
+    print("Products available:", global_services.get_products(result))
