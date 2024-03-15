@@ -70,8 +70,11 @@ class GlobalServices:
                 )
             response.raise_for_status()  # Raise an exception for HTTP errors
             return response.json()
-        except requests.exceptions.RequestException as e:
-            print("Error occurred during request:", e)
+        except requests.exceptions.RequestException as http_err:
+            if response.status_code == 400:
+                print("Bad Request: Invalid input provided.")
+            else:
+                print(f"HTTP error occurred: {http_err}")
             return None
 
     def lookup_mobile_number(self, mobile_number):
@@ -82,8 +85,7 @@ class GlobalServices:
             mobile_number (str): The mobile number to lookup.
 
         Returns:
-            dict or None: The JSON response containing information about
-                            the mobile number,or None if an error occurs.
+            Operator_id(int): The Operator ID that identifies the operator.
         """
         endpoint = "lookup/mobile-number"
         payload = {
@@ -91,8 +93,16 @@ class GlobalServices:
             "page": 1,
             "per_page": 50
         }
-
-        return self._make_request("POST", endpoint, payload)
+        try:
+            result = self._make_request("POST", endpoint, payload)
+            print("Inside Try brock")
+            for item in result:
+                if item.get('identified'):
+                    operator_id = item.get('id')
+                    print("Operator ID:", operator_id)
+            return operator_id
+        except Exception as e:
+            print("Invalid Number")
 
 
 # Example usage:
