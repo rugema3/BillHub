@@ -9,6 +9,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 import json
+import uuid
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -149,8 +150,29 @@ class GlobalServices:
         except Exception as e:
             print(f"Error retrieving products: {e}")
             return None
-
-
+        
+    def create_transaction(self, mobile_number, trx_id, product_id):
+        """Create a transaction."""
+        endpoint = "async/transactions"
+        payload = {
+            "external_id": trx_id,
+            "product_id": product_id,
+            "auto_confirm": True,
+            "credit_party_identifier": {
+                "mobile_number": mobile_number
+            }
+            }
+        try:
+            response = self._make_post_request("POST", endpoint, payload)
+            if response.status_code == 200:
+                return response.json()  # Assuming the response is JSON
+            else:
+                print("Create transaction failed. Status code:", response.status_code)
+                return None
+        except requests.RequestException as e:
+            print("Create transaction failed:", e)
+            return None
+        
 # Example usage:
 if __name__ == "__main__":
     global_services = GlobalServices()
@@ -184,3 +206,6 @@ if __name__ == "__main__":
             f"Destination amount: {destination_amount} {destination_currency}")
     print()
     print()
+    trx_id = "pwsx123u"
+    transact = global_services.create_transaction(mobile_number, trx_id, 6491)
+    
