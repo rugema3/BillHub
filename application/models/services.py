@@ -8,6 +8,7 @@ import os
 import requests
 from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
+import json
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -160,5 +161,26 @@ if __name__ == "__main__":
         print("Mobile number lookup result:", result)
     else:
         print("Mobile number lookup failed.")
+    products = global_services.get_products(result)
+    print("Products available:", products)
+    print()
+    print()
+    print(type(products))
 
-    print("Products available:", global_services.get_products(result))
+    for product in products:
+        if product['prices']['retail'] is not None:
+            retail_amount = product['prices']['retail']['amount']
+            fee = product['prices']['retail']['fee']
+            unit = product['prices']['retail']['unit']
+        else:
+            retail_amount = None
+            fee = None
+
+        destination_amount = product['destination']['amount']
+        destination_currency = product['destination']['unit']
+        print(
+            f"Retail amount: {retail_amount} {unit}, "
+            f"Fee: {fee} {unit}, "
+            f"Destination amount: {destination_amount} {destination_currency}")
+    print()
+    print()
