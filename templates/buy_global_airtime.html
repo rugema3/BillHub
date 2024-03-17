@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Global Airtime</title>
+</head>
+<body>
+    <h1>Buy Global Airtime</h1>
+    
+    <form action="/buy_global_airtime" method="post">
+        <label for="phone_number">Enter your phone number:</label>
+        <input type="text" id="phone_number" name="Phone_number" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if products %}
+        <h2>Select Product:</h2>
+        <form action="/buy_global_airtime" method="post">
+            <select name="product">
+                {% for product in products %}
+                    <option value="{{ product.id }}">
+                        {{ product.name }} - Retail amount: {{ product.prices.retail.amount }} {{ product.prices.retail.unit }},
+                        Fee: {{ product.prices.retail.fee }} {{ product.prices.retail.unit }},
+                        Destination amount: {{ product.destination.amount }} {{ product.destination.unit }}
+                    </option>
+                {% endfor %}
+            </select>
+            <button type="submit">Buy</button>
+        </form>
+    {% endif %}
+</body>
+</html>

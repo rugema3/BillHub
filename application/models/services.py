@@ -10,6 +10,7 @@ from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 import json
 import uuid
+import time
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -91,10 +92,7 @@ class GlobalServices:
             response.raise_for_status()  # Raise an exception for HTTP errors
             return response.json()
         except requests.exceptions.RequestException as http_err:
-            if response.status_code == 400:
-                print("Bad Request: Invalid input provided.")
-            else:
-                print(f"HTTP error occurred: {http_err}")
+            print(f"HTTP error occurred: {http_err}")
             return None
 
     def lookup_mobile_number(self, mobile_number):
@@ -150,7 +148,7 @@ class GlobalServices:
         except Exception as e:
             print(f"Error retrieving products: {e}")
             return None
-        
+
     def create_transaction(self, mobile_number, trx_id, product_id):
         """Create a transaction."""
         endpoint = "async/transactions"
@@ -164,15 +162,27 @@ class GlobalServices:
             }
         try:
             response = self._make_post_request("POST", endpoint, payload)
-            if response.status_code == 200:
-                return response.json()  # Assuming the response is JSON
-            else:
-                print("Create transaction failed. Status code:", response.status_code)
-                return None
+            print()
+            print("Response:", response)
+            return response
         except requests.RequestException as e:
             print("Create transaction failed:", e)
             return None
-        
+
+    def generate_transaction_id(self):
+        """Generate a unique transaction ID."""
+        # Generate a UUID to ensure uniqueness
+        unique_id = str(uuid.uuid4()).replace('-', '')[:10]
+
+        # Get current timestamp (in milliseconds)
+        timestamp_ms = str(int(time.time() * 1000))
+
+        # Concatenate the timestamp and unique ID to create the transaction ID
+        transaction_id = timestamp_ms + unique_id
+
+        return transaction_id
+
+
 # Example usage:
 if __name__ == "__main__":
     global_services = GlobalServices()
@@ -206,6 +216,6 @@ if __name__ == "__main__":
             f"Destination amount: {destination_amount} {destination_currency}")
     print()
     print()
-    trx_id = "pwsx123u"
+    trx_id = global_services.generate_transaction_id()
+    print("Transaction ID:", trx_id)
     transact = global_services.create_transaction(mobile_number, trx_id, 6491)
-    
