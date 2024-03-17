@@ -16,8 +16,8 @@
 
     {% if products %}
         <h2>Select Product:</h2>
-        <form action="/buy_global_airtime" method="post">
-            <select name="product">
+        <form action="/create_transaction" method="post">
+            <select name="product" id="product_select">
                 {% for product in products %}
                     <option value="{{ product.id }}">
                         {{ product.name }} - Retail amount: {{ product.prices.retail.amount }} {{ product.prices.retail.unit }},
@@ -26,8 +26,23 @@
                     </option>
                 {% endfor %}
             </select>
+            <!-- Add hidden input field for product_id -->
+            <input type="hidden" name="product_id" id="product_id" value="">
             <button type="submit">Buy</button>
         </form>
+    
+        <!-- JavaScript to set the product_id -->
+        <script>
+            // Get the select element
+            var selectElement = document.getElementById('product_select');
+            
+            // Add event listener to update product_id when a product is selected
+            selectElement.addEventListener('change', function() {
+                var productIdInput = document.getElementById('product_id');
+                productIdInput.value = selectElement.value;
+            });
+        </script>
     {% endif %}
+    
 </body>
 </html>

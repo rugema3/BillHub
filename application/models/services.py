@@ -162,8 +162,6 @@ class GlobalServices:
             }
         try:
             response = self._make_post_request("POST", endpoint, payload)
-            print()
-            print("Response:", response)
             return response
         except requests.RequestException as e:
             print("Create transaction failed:", e)
@@ -210,12 +208,14 @@ if __name__ == "__main__":
 
         destination_amount = product['destination']['amount']
         destination_currency = product['destination']['unit']
+        product_id = product['id']
         print(
             f"Retail amount: {retail_amount} {unit}, "
             f"Fee: {fee} {unit}, "
-            f"Destination amount: {destination_amount} {destination_currency}")
+            f"Destination amount: {destination_amount} {destination_currency},"
+            f"Product_id : {product_id}")
     print()
     print()
     trx_id = global_services.generate_transaction_id()
     print("Transaction ID:", trx_id)
-    transact = global_services.create_transaction(mobile_number, trx_id, 6491)
+    transact = global_services.create_transaction(mobile_number, trx_id, 33162)
