@@ -19,30 +19,39 @@
         <form action="/create_transaction" method="post">
             <select name="product" id="product_select">
                 {% for product in products %}
-                    <option value="{{ product.id }}">
+                    <option value="{{ product.id }}" data-retail-price="{{ product.prices.retail.amount }}" data-transaction-fee="{{ product.prices.transaction_fee }}" data-destination-amount="{{ product.destination.amount }}">
                         {{ product.name }} - Retail amount: {{ product.prices.retail.amount }} {{ product.prices.retail.unit }},
                         Fee: {{ product.prices.retail.fee }} {{ product.prices.retail.unit }},
                         Destination amount: {{ product.destination.amount }} {{ product.destination.unit }}
                     </option>
                 {% endfor %}
             </select>
-            <!-- Add hidden input field for product_id -->
-            <input type="hidden" name="product_id" id="product_id" value="">
+            <!-- Hidden input fields for product_id, retail_price, transaction_fee, and destination_amount -->
+            <input type="hidden" name="product_id" id="product_id">
+            <input type="hidden" name="retail_price" id="retail_price">
+            <input type="hidden" name="transaction_fee" id="transaction_fee">
+            <input type="hidden" name="destination_amount" id="destination_amount">
             <button type="submit">Buy</button>
         </form>
-    
-        <!-- JavaScript to set the product_id -->
-        <script>
-            // Get the select element
-            var selectElement = document.getElementById('product_select');
-            
-            // Add event listener to update product_id when a product is selected
-            selectElement.addEventListener('change', function() {
-                var productIdInput = document.getElementById('product_id');
-                productIdInput.value = selectElement.value;
-            });
-        </script>
     {% endif %}
     
+    <!-- JavaScript to set the product_id, retail_price, transaction_fee, and destination_amount -->
+    <script>
+        // Get the select element
+        var selectElement = document.getElementById('product_select');
+        
+        // Add event listener to update product_id, retail_price, transaction_fee, and destination_amount when a product is selected
+        selectElement.addEventListener('change', function() {
+            var productIdInput = document.getElementById('product_id');
+            var retailPriceInput = document.getElementById('retail_price');
+            var transactionFeeInput = document.getElementById('transaction_fee');
+            var destinationAmountInput = document.getElementById('destination_amount');
+            var selectedOption = selectElement.options[selectElement.selectedIndex];
+            productIdInput.value = selectedOption.value;
+            retailPriceInput.value = selectedOption.getAttribute('data-retail-price');
+            transactionFeeInput.value = selectedOption.getAttribute('data-transaction-fee');
+            destinationAmountInput.value = selectedOption.getAttribute('data-destination-amount');
+        });
+    </script>
 </body>
 </html>
