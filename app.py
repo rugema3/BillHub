@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Main applicatin where all routes will be run."""
 from flask import Flask, render_template, url_for, current_app, request
-from flask import flash, session
+from flask import flash, session, redirect
 from application.models.services import GlobalServices
 from application.models.paypal_handler import PayPalHandler
 import os
@@ -67,53 +67,94 @@ def buy_global_airtime():
     return render_template('buy_global_airtime.html')
 
 
-@app.route('/create_transaction', methods=['GET', 'POST'], strict_slashes=True)
+@app.route('/create_transaction', methods=['POST'])
 def create_transaction():
-    """Create Transaction route and confirm."""
-    print("inside the create transacion.")
-    print()
+    """
+    Create a PayPal payment and redirect user to PayPal payment page.
+
+    This route handles the initiation of a PayPal payment. It retrieves
+    product and payment information from the form submitted by the user,
+    creates a PayPal payment using the PayPalHandler class, and redirects
+    the user to the PayPal payment page.
+
+    Returns:
+        Flask.redirect: Redirects the user to the PayPal payment page.
+    """
     if request.method == 'POST':
-
-        # Retrieve relevant info from the form.
         product_id = request.form['product_id']
-        print("product_id: ", product_id)
         retail_price = float(request.form['retail_price'])
-        print()
-        print("Retail price: ", retail_price)
-        print("The price is of type: ", type(retail_price))
-        transaction_fee = (request.form['transaction_fee'])
-        if transaction_fee:
-            transaction_fee = float(transaction_fee)
-            print("Transaction Fee: ", transaction_fee)
-            print("The type of fee is: ", type(transaction_fee))
-        else:
-            print("No Transaction Fee in the form. ")
-
+        transaction_fee = request.form.get('transaction_fee', None)
         destination_amount = request.form['destination_amount']
-        print()
-        print("Destination amount : ", destination_amount)
-
-        # Retrieve relevant info from session.
         phone_number = session.get('phone_number')
 
-        # Generate a unique trx_id
-        trx_id = service.generate_transaction_id()
+        # Store some info in session.
+        session['product_id'] = product_id
 
-        # perform the buying of airtime.
+        # Add the retail price and the transaction Fee.
+        if transaction_fee:
+            transaction_fee = float(transaction_fee)
+            total = retail_price + transaction_fee
+        else:
+            total = retail_price
+
+        # Create a PayPal payment
+        paypal_redirect_url = paypal_handler.create_payment(
+            total, 
+            phone_number, 
+            request
+            )
+
+        if paypal_redirect_url:
+            # Redirect the user to the PayPal payment page
+            return redirect(paypal_redirect_url)
+        else:
+            flash("Failed to create PayPal payment.")
+            return redirect(url_for('home'))
+
+@app.route('/execute_payment')
+def execute_payment():
+    """
+    Execute PayPal payment and perform action after successful payment.
+
+    This route is called when the user returns from PayPal after completing
+    the payment. It executes the PayPal payment using the PayPalHandler class,
+    and if the payment execution is successful, it credits the customer based
+    on the requested service.
+
+    Returns:
+        Flask.redirect or Flask.render_template: Redirects the user to the home
+        page or renders the success template based on the payment status.
+    """
+    payment_id = request.args.get('paymentId')
+    payer_id = request.args.get('PayerID')
+
+    # Execute PayPal payment
+    success, error_message = paypal_handler.execute_payment(
+        payment_id, 
+        payer_id
+        )
+
+    if success:
+        # Retrieve the relevant info from session.
+        product_id = session.get('product_id')
+        phone_number = session.get('phone_number')
+
+        # Create a unique transaction_id
+        trx_id = service.generate_transaction_id()
         try:
             response = service.create_transaction(
-                    phone_number,
-                    trx_id,
-                    product_id
-                    )
-            print()
-            print("The class of the rsponse: ", type(response))
-            print("response in create Route: ", response)
-            flash("Transaction perfomed successfully.")
+                phone_number, 
+                trx_id, 
+                product_id
+                )
+            print("Response after sending airtime: ", response)
+            flash("Transaction performed successfully.")
             return render_template('success.html', response=response)
         except Exception as e:
-            flash(f"The transaction failed. please try again later. {e}")
-            return e
+            flash("Something went wrong and the transaction could not be performed. ", e)
+    else:
+        flash(f"Failed to execute PayPal payment: {error_message}")
+        return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
