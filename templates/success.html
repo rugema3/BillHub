@@ -4,8 +4,19 @@
     <title>Success</title> 
 </head>
 <body>
-   
+    <h1>Transaction Details</h1>
+    <p>Thank you for naking the purchase with BillHub. Your payment is successful.</p>
+    <p>An receipt has been sent to your inbox. Please keep it for your records.</p>
 
-    <p>Operatioin successfully executed.</p>
+    <p><strong>Transaction ID:</strong> {{ trx_id }}</p>
+    <p><strong>Confirmation Date:</strong> {{ response.confirmation_date }}</p>
+    <p><strong>Credit Party Mobile Number:</strong> {{ response.credit_party_identifier.mobile_number }}</p>
+    <p><strong>Retail Price:</strong> {{ response.prices.retail.amount }} {{ response.prices.retail.unit }}</p>
+    <p><strong>Wholesale Price:</strong> {{ response.prices.wholesale.amount }} {{ response.prices.wholesale.unit }}</p>
+    <p><strong>Operator Name:</strong> {{ response.product.operator.name }}</p>
+    <p><strong>Product Description:</strong> {{ response.product.description }}</p>
+    <p><strong>Status Message:</strong> {{ response.status.message }}</p>
+    <br>
+    <p>Thank you for brightening someone's face today!</p>
 </body>
 </html>

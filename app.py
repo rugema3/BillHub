@@ -148,8 +148,34 @@ def execute_payment():
                 product_id
                 )
             print("Response after sending airtime: ", response)
+            print()
+            # Retrieve information from the response
+            confirmation_date = response.get('confirmation_date')
+            credit_party_mobile_number = response.get('credit_party_identifier', {}).get('mobile_number')
+            retail_price = response.get('prices', {}).get('retail', {}).get('amount')
+            retail_price_currency = response.get('prices', {}).get('retail', {}).get('unit')
+            wholesale_price = response.get('prices', {}).get('wholesale', {}).get('amount')
+            wholesale_price_currency = response.get('prices', {}).get('wholesale', {}).get('unit')
+            operator_name = response.get('product', {}).get('operator', {}).get('name')
+            product_description = response.get('product', {}).get('description')
+            status_message = response.get('status', {}).get('message')
+
+            # Log or print the retrieved information
+            print("Confirmation Date:", confirmation_date)
+            print("Credit Party Mobile Number:", credit_party_mobile_number)
+            print("Retail Price:", retail_price, retail_price_currency)
+            print("Wholesale Price:", wholesale_price, wholesale_price_currency)
+            print("Operator Name:", operator_name)
+            print("Product Description:", product_description)
+            print("Status Message:", status_message)
+            print()
+            print("Transaction_id: ", trx_id)
             flash("Transaction performed successfully.")
-            return render_template('success.html', response=response)
+            return render_template(
+                'success.html', 
+                response=response,
+                trx_id=trx_id
+                )
         except Exception as e:
             flash("Something went wrong and the transaction could not be performed. ", e)
     else:
