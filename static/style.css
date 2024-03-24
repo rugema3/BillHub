@@ -1,0 +1,54 @@
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .content {
+            min-height: calc(100% - 100px); /* Subtracting the height of the footer */
+            /* Add your styles for the content area here */
+        }
+        .footer {
+            height: 100px; /* Height of the footer */
+            background-color: #333; /* Footer background color */
+            color: #fff; /* Text color for the footer */
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            margin-bottom: 0;
+        }
+    
+       
+        .product-options {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .product-option {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        
+        .product-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .product-name {
+            font-weight: bold;
+        }
+        
+        .retail-price {
+            color: green;
+        }
+        
+        .fee {
+            color: red;
+        }
+        
+        .destination-amount {
+            font-style: italic;
+        }
+        

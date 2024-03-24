@@ -1,57 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy Global Airtime</title>
-</head>
-<body>
-    <h1>Buy Global Airtime</h1>
+{% include 'header.html' %}
     
-    <form action="/buy_global_airtime" method="post">
-        <label for="phone_number">Enter your phone number:</label>
-        <input type="text" id="phone_number" name="Phone_number" required>
-        <button type="submit">Submit</button>
-    </form>
+<!-- Home Section -->
+<section id="home" class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Buy Global Airtime</h1>
+            <form action="/buy_global_airtime" method="post">
+                <label for="phone_number">Enter your phone number:</label>
+                <input type="text" id="phone_number" name="Phone_number" required class="form-control mb-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</section>
 
-    {% if products %}
-        <h2>Select Product:</h2>
-        <form action="/create_transaction" method="post">
-            <select name="product" id="product_select">
+<!-- Buy Global Airtime Section -->
+<section id="buy-global-airtime" class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Select Product:</h2>
+            <div class="product-options">
                 {% for product in products %}
-                    <option value="{{ product.id }}" data-retail-price="{{ product.prices.retail.amount }}" data-transaction-fee="{{ product.prices.transaction_fee }}" data-destination-amount="{{ product.destination.amount }}">
-                        {{ product.name }} - Retail amount: {{ product.prices.retail.amount }} {{ product.prices.retail.unit }},
-                        Fee: {{ product.prices.retail.fee }} {{ product.prices.retail.unit }},
-                        Destination amount: {{ product.destination.amount }} {{ product.destination.unit }}
-                    </option>
+                    <div class="product-option" data-product-id="{{ product.id }}" data-retail-price="{{ product.prices.retail.amount }}" data-transaction-fee="{{ product.prices.transaction_fee }}" data-destination-amount="{{ product.destination.amount }}">
+                        <div class="product-name">{{ product.name }}</div>
+                        <div class="retail-price">Retail amount: {{ product.prices.retail.amount }} {{ product.prices.retail.unit }}</div>
+                        <div class="fee">Fee: {{ product.prices.retail.fee }} {{ product.prices.retail.unit }}</div>
+                        <div class="destination-amount">Destination amount: {{ product.destination.amount }} {{ product.destination.unit }}</div>
+                        <form action="/create_transaction" method="post">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="retail_price" value="{{ product.prices.retail.amount }}">
+                            <input type="hidden" name="transaction_fee" value="{{ product.prices.transaction_fee }}">
+                            <input type="hidden" name="destination_amount" value="{{ product.destination.amount }}">
+                            <button type="submit" class="btn btn-primary">Buy</button>
+                        </form>
+                    </div>
+
                 {% endfor %}
-            </select>
-            <!-- Hidden input fields for product_id, retail_price, transaction_fee, and destination_amount -->
-            <input type="hidden" name="product_id" id="product_id">
-            <input type="hidden" name="retail_price" id="retail_price">
-            <input type="hidden" name="transaction_fee" id="transaction_fee">
-            <input type="hidden" name="destination_amount" id="destination_amount">
-            <button type="submit">Buy</button>
-        </form>
-    {% endif %}
-    
-    <!-- JavaScript to set the product_id, retail_price, transaction_fee, and destination_amount -->
-    <script>
-        // Get the select element
-        var selectElement = document.getElementById('product_select');
-        
-        // Add event listener to update product_id, retail_price, transaction_fee, and destination_amount when a product is selected
-        selectElement.addEventListener('change', function() {
-            var productIdInput = document.getElementById('product_id');
-            var retailPriceInput = document.getElementById('retail_price');
-            var transactionFeeInput = document.getElementById('transaction_fee');
-            var destinationAmountInput = document.getElementById('destination_amount');
-            var selectedOption = selectElement.options[selectElement.selectedIndex];
-            productIdInput.value = selectedOption.value;
-            retailPriceInput.value = selectedOption.getAttribute('data-retail-price');
-            transactionFeeInput.value = selectedOption.getAttribute('data-transaction-fee');
-            destinationAmountInput.value = selectedOption.getAttribute('data-destination-amount');
+            
+            </div>
+</section>
+
+<!-- Bootstrap JS and jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- JavaScript to set the product_id, retail_price, transaction_fee, and destination_amount -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const productOptions = document.querySelectorAll('.product-option');
+
+        productOptions.forEach(function(option) {
+            option.addEventListener('click', function(event) {
+                const productId = option.getAttribute('data-product-id');
+                const retailPrice = option.getAttribute('data-retail-price');
+                const transactionFee = option.getAttribute('data-transaction-fee');
+                const destinationAmount = option.getAttribute('data-destination-amount');
+                
+                document.getElementById('product_id').value = productId;
+                document.getElementById('retail_price').value = retailPrice;
+                document.getElementById('transaction_fee').value = transactionFee;
+                document.getElementById('destination_amount').value = destinationAmount;
+            });
         });
-    </script>
+    });
+</script>
+{% include 'footer.html' %}
 </body>
 </html>
+

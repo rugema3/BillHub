@@ -40,6 +40,16 @@ def home():
     """Define home page."""
     return render_template('index.html')
 
+@app.route('/about')
+def about():
+    """Define the about route."""
+    return render_template('index.html')
+
+@app.route('/')
+def services():
+    """Define Services route."""
+    return render_template('index.html')
+
 
 @app.route('/buy_global_airtime', methods=['GET', 'POST'],
            strict_slashes=True)
@@ -82,10 +92,11 @@ def create_transaction():
     """
     if request.method == 'POST':
         product_id = request.form['product_id']
-        retail_price = float(request.form['retail_price'])
+        retail_price = (request.form['retail_price'])
         transaction_fee = request.form.get('transaction_fee', None)
         destination_amount = request.form['destination_amount']
         phone_number = session.get('phone_number')
+        print("retail price: ", retail_price)
 
         # Store some info in session.
         session['product_id'] = product_id

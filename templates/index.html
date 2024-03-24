@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>BillHub</title> 
-</head>
-<body>
-    <ul>
-        <li><a href="{{ url_for('buy_global_airtime') }}">Buy airtime</a></li>
-    </ul>
+{% include 'header.html' %}
+<main class="main">
+    <section class="hero bg-primary text-white text-center py-5">
+        <div class="container">
+            <h1>Welcome to BillHub</h1>
+            <p>We offer airtime services to the diaspora community worldwide.</p>
+            <a href="{{ url_for('buy_global_airtime') }}" class="btn btn-light btn-lg">Buy Airtime</a>
+        </div>
+    </section>
 
-    <p>My home page.</p>
-</body>
-</html>
+</main>
+
+{% include 'footer.html' %}
