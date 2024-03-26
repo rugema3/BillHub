@@ -40,10 +40,12 @@ def home():
     """Define home page."""
     return render_template('index.html')
 
+
 @app.route('/about')
 def about():
     """Define the about route."""
     return render_template('index.html')
+
 
 @app.route('/')
 def services():
@@ -54,7 +56,9 @@ def services():
 @app.route('/buy_global_airtime', methods=['GET', 'POST'],
            strict_slashes=True)
 def buy_global_airtime():
-    """Buy airtime globally."""
+    """Buy airtime globally.
+    This route handles the vending of airtime.
+    """
     if request.method == 'POST':
         # Retrive Phone number from the form.
         phone_number = request.form['Phone_number']
@@ -110,8 +114,8 @@ def create_transaction():
 
         # Create a PayPal payment
         paypal_redirect_url = paypal_handler.create_payment(
-            total, 
-            phone_number, 
+            total,
+            phone_number,
             request
             )
 
@@ -121,6 +125,7 @@ def create_transaction():
         else:
             flash("Failed to create PayPal payment.")
             return redirect(url_for('home'))
+
 
 @app.route('/execute_payment')
 def execute_payment():
@@ -141,7 +146,7 @@ def execute_payment():
 
     # Execute PayPal payment
     success, error_message = paypal_handler.execute_payment(
-        payment_id, 
+        payment_id,
         payer_id
         )
 
@@ -154,8 +159,8 @@ def execute_payment():
         trx_id = service.generate_transaction_id()
         try:
             response = service.create_transaction(
-                phone_number, 
-                trx_id, 
+                phone_number,
+                trx_id,
                 product_id
                 )
             print("Response after sending airtime: ", response)
@@ -183,7 +188,7 @@ def execute_payment():
             print("Transaction_id: ", trx_id)
             flash("Transaction performed successfully.")
             return render_template(
-                'success.html', 
+                'success.html',
                 response=response,
                 trx_id=trx_id
                 )

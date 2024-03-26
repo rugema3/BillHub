@@ -1,7 +1,7 @@
 {% include 'header.html' %}
     
 <!-- Home Section -->
-<section id="home" class="container mt-5">
+<section id="home" class="container mt-5" style="height: 65%;">
     <div class="row">
         <div class="col-md-12">
             <h1>Buy Global Airtime</h1>
@@ -15,10 +15,10 @@
 </section>
 
 <!-- Buy Global Airtime Section -->
-<section id="buy-global-airtime" class="container mt-5">
+<section id="buy-global-airtime" class="container mt-5" >
     <div class="row">
-        <div class="col-md-12">
-            <h2>Select Product:</h2>
+        <div class="col-md-12" style="margin-top:2%">
+            <h2 style="margin-top:-5%;">Select Product:</h2>
             <div class="product-options">
                 {% for product in products %}
                     <div class="product-option" data-product-id="{{ product.id }}" data-retail-price="{{ product.prices.retail.amount }}" data-transaction-fee="{{ product.prices.transaction_fee }}" data-destination-amount="{{ product.destination.amount }}">
