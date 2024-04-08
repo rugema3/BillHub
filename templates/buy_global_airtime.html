@@ -6,13 +6,41 @@
         <div class="col-md-12">
             <h1>Buy Global Airtime</h1>
             <form action="/buy_global_airtime" method="post">
-                <label for="phone_number">Enter your phone number:</label>
-                <input type="text" id="phone_number" name="Phone_number" required class="form-control mb-3">
+                <div class="form-group">
+                    <label for="country">Select your country:</label>
+                    <select id="country" name="Country" class="form-control mb-3" onchange="updateDialCode()">
+                        <option value="">Select Country</option>
+                        {% for country in countries %}
+                            <option value="{{ country['code'] }}" data-dialcode="{{ country['dial_code'] }}">{{ country['name'] }} {{ country.emoji }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phone_number">Enter your phone number:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="dial_code"></span>
+                        </div>
+                        <input type="text" id="phone_number" name="Phone_number" required class="form-control">
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
 </section>
+
+<script>
+    function updateDialCode() {
+        var countrySelect = document.getElementById("country");
+        var selectedOption = countrySelect.options[countrySelect.selectedIndex];
+        var dialCode = selectedOption.getAttribute("data-dialcode");
+        var phoneNumberInput = document.getElementById("phone_number");
+        var phoneNumber = phoneNumberInput.value;
+        phoneNumberInput.value = dialCode + phoneNumber;
+    }
+</script>
+
 
 <!-- Buy Global Airtime Section -->
 <section id="buy-global-airtime" class="container mt-5" >

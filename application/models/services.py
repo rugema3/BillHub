@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import json
 import uuid
 import time
+from flask_caching import Cache
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -179,6 +180,24 @@ class GlobalServices:
         transaction_id = timestamp_ms + unique_id
 
         return transaction_id
+    def get_cached_countries(self, cache):
+        """Retrieve countries from cache.
+        Returns: list of countries.
+        """
+        countries = cache.get('countries')  # Retrieve countries from cache
+        print("cached countries: ", countries)
+        
+        # If countries are not cached, load from file and cache
+        if not countries:
+            print("countries not in cache.")
+            print()
+            with open('static/countries.json', 'r') as f:
+                countries = json.load(f)
+
+            # Cache the countries for 1 hour
+            cache.set('countries', countries, timeout=3600)  
+            print("Retrieved countries from json: ", countries)
+        return countries
 
 
 # Example usage:

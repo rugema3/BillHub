@@ -6,12 +6,14 @@ from application.models.services import GlobalServices
 from application.models.paypal_handler import PayPalHandler
 import os
 from dotenv import load_dotenv
+import json
+from flask_caching import Cache
 
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
 # Set a secret key for the Flask application
 app.secret_key = os.urandom(24)
-
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -59,9 +61,17 @@ def buy_global_airtime():
     """Buy airtime globally.
     This route handles the vending of airtime.
     """
+    
+    # Retrieve countries from cache or load from file
+    countries = service.get_cached_countries(cache)
+    #print("contries: ", countries)
+    print()
+    print(type(countries))
+
     if request.method == 'POST':
         # Retrive Phone number from the form.
         phone_number = request.form['Phone_number']
+        print("phone number: ", phone_number)
 
         # lookup the product id based on user phone number.
         product_id = service.lookup_mobile_number(phone_number)
@@ -74,11 +84,17 @@ def buy_global_airtime():
 
         # Store products in session.
         session['products'] = products
+
+        
         return render_template(
             'buy_global_airtime.html',
             products=products
             )
-    return render_template('buy_global_airtime.html')
+    
+    return render_template(
+        'buy_global_airtime.html',
+        countries=countries
+        )
 
 
 @app.route('/create_transaction', methods=['POST'])
