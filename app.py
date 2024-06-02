@@ -37,7 +37,7 @@ app.paypal_handler = paypal_handler
 
 @app.route('/')
 def home():
-    """Define home page."""
+    """Define home page Route."""
     return render_template('index.html')
 
 
@@ -200,4 +200,4 @@ def execute_payment():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
